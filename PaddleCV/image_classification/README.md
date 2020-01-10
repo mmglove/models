@@ -602,6 +602,13 @@ python -m paddle.distributed.launch train.py \
 |[ShuffleNetV2_x2_0](https://paddle-imagenet-models-name.bj.bcebos.com/ShuffleNetV2_x2_0_pretrained.tar) | 73.15% | 91.20% | 6.430 | 3.954 |
 |[ShuffleNetV2_swish](https://paddle-imagenet-models-name.bj.bcebos.com/ShuffleNetV2_swish_pretrained.tar) | 70.03% | 89.17% | 6.078 | 4.976 |
 
+### AutoDL Series
+|Model | Top-1 | Top-5 | Paddle Fluid inference time(ms) | Paddle TensorRT inference time(ms) |
+|- |:-: |:-: |:-: |:-: |
+|[DARTS_4M](https://paddle-imagenet-models-name.bj.bcebos.com/DARTS_GS_4M_pretrained.tar) | 75.23% | 92.15% | 13.572 | 6.335 |
+|[DARTS_6M](https://paddle-imagenet-models-name.bj.bcebos.com/DARTS_GS_6M_pretrained.tar) | 76.03% | 92.79% | 16.406 | 6.864 |
+- AutoDL基于可微结构搜索思路DARTS改进，引入Local Rademacher Complexity控制过拟合，并通过Resource Constraining灵活调整模型大小。
+
 ### ResNet Series
 |Model | Top-1 | Top-5 | Paddle Fluid inference time(ms) | Paddle TensorRT inference time(ms) |
 |- |:-: |:-: |:-: |:-: |
@@ -627,6 +634,8 @@ python -m paddle.distributed.launch train.py \
 |[Res2Net50_26w_4s](https://paddle-imagenet-models-name.bj.bcebos.com/Res2Net50_26w_4s_pretrained.tar) | 79.33% | 94.57% | 10.731 | 8.274 |
 |[Res2Net50_vd_26w_4s](https://paddle-imagenet-models-name.bj.bcebos.com/Res2Net50_vd_26w_4s_pretrained.tar) | 79.75% | 94.91% | 11.012 | 8.493 |
 |[Res2Net50_14w_8s](https://paddle-imagenet-models-name.bj.bcebos.com/Res2Net50_14w_8s_pretrained.tar) | 79.46% | 94.70% | 16.937 | 10.205 |
+|[Res2Net101_vd_26w_4s](https://paddle-imagenet-models-name.bj.bcebos.com/Res2Net101_vd_26w_4s_pretrained.tar) | 80.64% | 95.22% | 19.612 | 14.651 |
+|[Res2Net200_vd_26w_4s](https://paddle-imagenet-models-name.bj.bcebos.com/Res2Net200_vd_26w_4s_pretrained.tar) | 81.21% | 95.71% | 35.809 | 26.479 |
 
 ### ResNeXt Series
 |Model | Top-1 | Top-5 | Paddle Fluid inference time(ms) | Paddle TensorRT inference time(ms) |
@@ -767,6 +776,7 @@ python -m paddle.distributed.launch train.py \
 - EfficientNet: [EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks](https://arxiv.org/abs/1905.11946), Mingxing Tan, Quoc V. Le
 - Res2Net: [Res2Net: A New Multi-scale Backbone Architecture](https://arxiv.org/abs/1904.01169), Shang-Hua Gao, Ming-Ming Cheng, Kai Zhao, Xin-Yu Zhang, Ming-Hsuan Yang, Philip Torr
 - HRNet: [Deep High-Resolution Representation Learning for Visual Recognition](https://arxiv.org/abs/1908.07919), Jingdong Wang, Ke Sun, Tianheng Cheng, Borui Jiang, Chaorui Deng, Yang Zhao, Dong Liu, Yadong Mu, Mingkui Tan, Xinggang Wang, Wenyu Liu, Bin Xiao
+- DARTS: [DARTS: Differentiable Architecture Search](https://arxiv.org/pdf/1806.09055.pdf), Hanxiao Liu, Karen Simonyan, Yiming Yang
 
 ## 版本更新
 - 2018/12/03 **Stage1**: 更新AlexNet，ResNet50，ResNet101，MobileNetV1
@@ -781,6 +791,8 @@ python -m paddle.distributed.launch train.py \
 - 2019/09/11 **Stage8**: 更新ResNet18_vd，ResNet34_vd，MobileNetV1_x0_25，MobileNetV1_x0_5，MobileNetV1_x0_75，MobileNetV2_x0_75，MobilenNetV3_small_x1_0，DPN68，DPN92，DPN98，DPN107，DPN131，ResNeXt101_vd_32x4d，ResNeXt152_vd_64x4d，Xception65，Xception71，Xception41_deeplab，Xception65_deeplab，SE_ResNet50_vd
 - 2019/09/20 更新EfficientNet
 - 2019/11/28 **Stage9**: 更新SE_ResNet18_vd，SE_ResNet34_vd，SE_ResNeXt50_vd_32x4d，ResNeXt152_vd_32x4d，Res2Net50_26w_4s，Res2Net50_14w_8s，Res2Net50_vd_26w_4s，HRNet_W18_C，HRNet_W30_C，HRNet_W32_C，HRNet_W40_C，HRNet_W44_C，HRNet_W48_C，HRNet_W64_C
+- 2020/01/07 **Stage10**: 更新AutoDL Series
+- 2020/01/09 **Stage11**: 更新Res2Net101_vd_26w_4s, Res2Net200_vd_26w_4s
 
 ## 如何贡献代码
 

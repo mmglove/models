@@ -253,16 +253,31 @@ Refer to [mixup: Beyond Empirical Risk Minimization](https://arxiv.org/abs/1710.
 
 ### Using Mixed-Precision Training
 
-Set --fp16=True to sart Mixed-Precision Training.
+Set --use_fp16=True to sart Automatic Mixed Precision (AMP) Training. During the training process, the float16 data type will be used to speed up the training performance. You may need to use the --scale_loss parameter to avoid the accuracy dropping, such as setting --scale_loss=128.0.
 
-```bash
-python train.py \
-    --model=ResNet50 \
-    --fp16=True \
-    --scale_loss=0.8
-```
+After configuring the data path (modify the value of `DATA_DIR` in [scripts/train/ResNet50_fp16.sh](scripts/train/ResNet50_fp16.sh)), you can enable ResNet50 to start AMP Training by executing the command of `bash run.sh train ResNet50_fp16`.
 
-Refer to [PaddlePaddle/Fleet](https://github.com/PaddlePaddle/Fleet/tree/develop/benchmark/collective/resnet)
+Refer to [PaddlePaddle/Fleet](https://github.com/PaddlePaddle/Fleet/tree/develop/benchmark/collective/resnet) for the multi-machine and multi-card training.
+
+Performing on Tesla V100 single machine with 8 cards, two machines with 16 cards and four machines with 32 cards, the performance of ResNet50 AMP training is shown as below (enable DALI).
+
+* BatchSize = 256
+
+nodes*crads|throughput|speedup|test\_acc1|test\_acc5
+---|---|---|---|---
+1*1|1035 ins/s|1|0.75333|0.92702
+1*8|7840 ins/s|7.57|0.75603|0.92771
+2*8|14277 ins/s|13.79|0.75872|0.92793
+4*8|28594 ins/s|27.63|0.75253|0.92713
+
+* BatchSize = 128
+
+nodes*crads|throughput|speedup|test\_acc1|test\_acc5
+---|---|---|---|---
+1*1|936  ins/s|1|0.75280|0.92531
+1*8|7108 ins/s|7.59|0.75832|0.92771
+2*8|12343 ins/s|13.18|0.75766|0.92723
+4*8|24407 ins/s|26.07|0.75859|0.92871
 
 ### Preprocessing with Nvidia DALI
 
@@ -612,6 +627,18 @@ Pretrained models can be downloaded by clicking related model names.
 |[HRNet_W48_C](https://paddle-imagenet-models-name.bj.bcebos.com/HRNet_W48_C_pretrained.tar) | 78.95% | 94.42% | 30.064 | 19.963 |
 |[HRNet_W64_C](https://paddle-imagenet-models-name.bj.bcebos.com/HRNet_W64_C_pretrained.tar) | 79.30% | 94.61% | 38.921 | 24.742 |
 
+### ResNet_ACNet Series
+|Model | Top-1 | Top-5 | Paddle Fluid inference time(ms) | Paddle TensorRT inference time(ms) |
+|- |:-: |:-: |:-: |:-: |
+|[ResNet50_ACNet](https://paddle-imagenet-models-name.bj.bcebos.com/ResNet50_ACNet_pretrained.tar)<sub>1</sub> | 76.71% | 93.24% | 13.205 | 8.804 |
+|[ResNet50_ACNet](https://paddle-imagenet-models-name.bj.bcebos.com/ResNet50_ACNet_deploy_pretrained.tar)<sub>2</sub> | 76.71% | 93.24% | 7.418 | 5.950 |
+
+* Note:
+    * `1`. deploy mode is set as False to eval.
+    * `2`. Use `sh ./utils/acnet/convert_model.sh` to convert to trained model, and set deploy mode as True to eval.
+    * `./utils/acnet/convert_model.sh` contains 4 parmeters, which are model name, input model directory, output model directory and class number.
+
+
 ## FAQ
 
 **Q:** How to solve this problem when I try to train a 6-classes dataset with indicating pretrained_model parameter ?
@@ -646,9 +673,12 @@ Enforce failed. Expected x_dims[1] == labels_dims[1], but received x_dims[1]:100
 - EfficientNet: [EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks](https://arxiv.org/abs/1905.11946), Mingxing Tan, Quoc V. Le
 - Res2Net: [Res2Net: A New Multi-scale Backbone Architecture](https://arxiv.org/abs/1904.01169), Shang-Hua Gao, Ming-Ming Cheng, Kai Zhao, Xin-Yu Zhang, Ming-Hsuan Yang, Philip Torr
 - HRNet: [Deep High-Resolution Representation Learning for Visual Recognition](https://arxiv.org/abs/1908.07919), Jingdong Wang, Ke Sun, Tianheng Cheng, Borui Jiang, Chaorui Deng, Yang Zhao, Dong Liu, Yadong Mu, Mingkui Tan, Xinggang Wang, Wenyu Liu, Bin Xiao
+- DARTS: [DARTS: Differentiable Architecture Search](https://arxiv.org/pdf/1806.09055.pdf), Hanxiao Liu, Karen Simonyan, Yiming Yang
+- ACNet: [ACNet: Strengthening the Kernel Skeletons for Powerful CNN via Asymmetric Convolution Blocks](https://arxiv.org/abs/1908.03930), Xiaohan Ding, Yuchen Guo, Guiguang Ding, Jungong Han
+
+
 
 ## Update
-
 - 2018/12/03 **Stage1**: Update AlexNet, ResNet50, ResNet101, MobileNetV1
 - 2018/12/23 **Stage2**: Update VGG Series, SeResNeXt50_32x4d, SeResNeXt101_32x4d, ResNet152
 - 2019/01/31 Update MobileNetV2_x1_0

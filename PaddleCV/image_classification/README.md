@@ -365,15 +365,31 @@ Mixup相关介绍参考[mixup: Beyond Empirical Risk Minimization](https://arxiv
 
 ### 混合精度训练
 
-通过指定--fp16=True 启动混合训练，在训练过程中会使用float16数据，并输出float32的模型参数。您可能需要同时传入--scale_loss来解决fp16训练的精度问题，通常传入--scale_loss=0.8即可。
+通过指定--use_fp16=True 启动混合精度训练，在训练过程中会使用float16数据类型，并输出float32的模型参数。您可能需要同时传入--scale_loss来解决fp16训练的精度问题，如传入--scale_loss=128.0。
 
-```bash
-python train.py \
-    --model=ResNet50 \
-    --fp16=True \
-    --scale_loss=0.8
-```
-具体内容也可参考[Fleet](https://github.com/PaddlePaddle/Fleet/tree/develop/benchmark/collective/resnet)
+在配置好数据集路径后（修改[scripts/train/ResNet50_fp16.sh](scripts/train/ResNet50_fp16.sh)文件中`DATA_DIR`的值），对ResNet50模型进行混合精度训练可通过运行`bash run.sh train ResNet50_fp16`命令完成。
+
+多机多卡ResNet50模型的混合精度训练请参考[PaddlePaddle/Fleet](https://github.com/PaddlePaddle/Fleet/tree/develop/benchmark/collective/resnet)。
+
+使用Tesla V100单机8卡、2机器16卡、4机器32卡，对ResNet50模型进行混合精度训练的结果如下（开启DALI）：
+
+* BatchSize = 256
+
+节点数*卡数|吞吐|加速比|test\_acc1|test\_acc5
+---|---|---|---|---
+1*1|1035 ins/s|1|0.75333|0.92702
+1*8|7840 ins/s|7.57|0.75603|0.92771
+2*8|14277 ins/s|13.79|0.75872|0.92793
+4*8|28594 ins/s|27.63|0.75253|0.92713
+
+* BatchSize = 128
+
+节点数*卡数|吞吐|加速比|test\_acc1|test\_acc5
+---|---|---|---|---
+1*1|936  ins/s|1|0.75280|0.92531
+1*8|7108 ins/s|7.59|0.75832|0.92771
+2*8|12343 ins/s|13.18|0.75766|0.92723
+4*8|24407 ins/s|26.07|0.75859|0.92871
 
 ### 性能分析
 
@@ -735,6 +751,18 @@ python -m paddle.distributed.launch train.py \
 |[HRNet_W48_C](https://paddle-imagenet-models-name.bj.bcebos.com/HRNet_W48_C_pretrained.tar) | 78.95% | 94.42% | 30.064 | 19.963 |
 |[HRNet_W64_C](https://paddle-imagenet-models-name.bj.bcebos.com/HRNet_W64_C_pretrained.tar) | 79.30% | 94.61% | 38.921 | 24.742 |
 
+
+### ResNet_ACNet Series
+|Model | Top-1 | Top-5 | Paddle Fluid inference time(ms) | Paddle TensorRT inference time(ms) |
+|- |:-: |:-: |:-: |:-: |
+|[ResNet50_ACNet](https://paddle-imagenet-models-name.bj.bcebos.com/ResNet50_ACNet_pretrained.tar)<sub>1</sub> | 76.71% | 93.24% | 13.205 | 8.804 |
+|[ResNet50_ACNet](https://paddle-imagenet-models-name.bj.bcebos.com/ResNet50_ACNet_deploy_pretrained.tar)<sub>2</sub> | 76.71% | 93.24% | 7.418 | 5.950 |
+
+* 注:
+    * `1`. 不对训练模型结果进行参数转换，进行评估。
+    * `2`. 使用`sh ./utils/acnet/convert_model.sh`命令对训练模型结果进行参数转换，并设置`deploy mode=True`，进行评估。
+    * `./utils/acnet/convert_model.sh`包含4个参数，分别是模型名称、输入的模型地址、输出的模型地址以及类别数量。
+
 ## FAQ
 
 **Q:** 加载预训练模型报错，Enforce failed. Expected x_dims[1] == labels_dims[1], but received x_dims[1]:1000 != labels_dims[1]:6.
@@ -777,6 +805,7 @@ python -m paddle.distributed.launch train.py \
 - Res2Net: [Res2Net: A New Multi-scale Backbone Architecture](https://arxiv.org/abs/1904.01169), Shang-Hua Gao, Ming-Ming Cheng, Kai Zhao, Xin-Yu Zhang, Ming-Hsuan Yang, Philip Torr
 - HRNet: [Deep High-Resolution Representation Learning for Visual Recognition](https://arxiv.org/abs/1908.07919), Jingdong Wang, Ke Sun, Tianheng Cheng, Borui Jiang, Chaorui Deng, Yang Zhao, Dong Liu, Yadong Mu, Mingkui Tan, Xinggang Wang, Wenyu Liu, Bin Xiao
 - DARTS: [DARTS: Differentiable Architecture Search](https://arxiv.org/pdf/1806.09055.pdf), Hanxiao Liu, Karen Simonyan, Yiming Yang
+- ACNet: [ACNet: Strengthening the Kernel Skeletons for Powerful CNN via Asymmetric Convolution Blocks](https://arxiv.org/abs/1908.03930), Xiaohan Ding, Yuchen Guo, Guiguang Ding, Jungong Han
 
 ## 版本更新
 - 2018/12/03 **Stage1**: 更新AlexNet，ResNet50，ResNet101，MobileNetV1

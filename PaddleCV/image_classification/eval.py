@@ -52,6 +52,7 @@ add_arg('use_se',           bool, True,                 "Whether to use Squeeze-
 add_arg('save_json_path',   str,  None,                 "Whether to save output in json file.")
 add_arg('same_feed',        int,  0,                    "Whether to feed same images")
 add_arg('print_step',       int,  1,                    "the batch step to print info")
+add_arg('deploy',                bool,    False,                      "deploy mode, currently used in ACNet")
 # yapf: enable
 
 logging.basicConfig(level=logging.INFO)
@@ -84,6 +85,8 @@ def eval(args):
         model = models.__dict__[args.model](is_test=True,
                                             padding_type=args.padding_type,
                                             use_se=args.use_se)
+    elif "ACNet" in args.model:
+        model = models.__dict__[args.model](deploy=args.deploy)
     else:
         model = models.__dict__[args.model]()
 
@@ -119,7 +122,8 @@ def eval(args):
     exe.run(fluid.default_startup_program())
     if args.use_gpu:
         places = fluid.framework.cuda_places()
-
+    else:
+        places = fluid.framework.cpu_places()
     compiled_program = fluid.compiler.CompiledProgram(
         test_program).with_data_parallel(places=places)
 
@@ -134,7 +138,8 @@ def eval(args):
     cnt = 0
     parallel_data = []
     parallel_id = []
-    place_num = paddle.fluid.core.get_cuda_device_count()
+    place_num = paddle.fluid.core.get_cuda_device_count(
+    ) if args.use_gpu else int(os.environ.get('CPU_NUM', 1))
     real_iter = 0
     info_dict = {}
 
